@@ -1,23 +1,25 @@
-import { useEffect } from "react";
-import { useRouter } from "next/router";
 import { AiOutlinePlus } from "react-icons/ai";
 import { MdDeleteForever } from "react-icons/md";
+import { GoSignOut } from "react-icons/go";
 import { FaEdit } from "react-icons/fa";
 const arr = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 ];
 
 export default function Home() {
-    const route = useRouter();
-    useEffect(() => {
-        route.push("/login");
-    }, []);
     return (
         <main className="">
-            <div className="max-w-xl mx-auto mt-10">
+            <div className="bg-black text-white w-44 py-4 mt-10 rounded-lg transition-transform hover:bg-black/[0.8] active:scale-90 flex items-center justify-center gap-2 font-medium shadow-md fixed bottom-5 right-5 cursor-pointer">
+                <GoSignOut size={18} />
+                <span>Logout</span>
+            </div>
+            <div className="max-w-3xl mx-auto mt-10 p-8">
                 <div className="bg-white -m-6 p-3 sticky top-0">
-                    <div className="flex flex-col items-center gap-5">
-                        <img src="/todo-banner.jpg" className="w-[400px]" />
+                    <div className="flex justify-center flex-col items-center">
+                        <span className="text-7xl mb-10">📝</span>
+                        <h1 className="text-5xl md:text-7xl font-bold">
+                            ToooDooo's
+                        </h1>
                     </div>
                     <div className="flex items-center gap-2 mt-10">
                         <input
