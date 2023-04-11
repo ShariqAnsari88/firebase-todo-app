@@ -20,7 +20,7 @@ const RegisterForm = () => {
     const [username, setUsername] = useState(null);
     const [email, setEmail] = useState(null);
     const [password, setPassword] = useState(null);
-    const { authUser, isLoading } = useAuth();
+    const { authUser, isLoading, setAuthUser } = useAuth();
 
     useEffect(() => {
         if (!isLoading && authUser) {
@@ -29,10 +29,20 @@ const RegisterForm = () => {
     }, [authUser, isLoading]);
 
     const singupHandler = async () => {
+        if (!email || !password || !username) return;
         try {
-            await createUserWithEmailAndPassword(auth, email, password);
+            const { user } = await createUserWithEmailAndPassword(
+                auth,
+                email,
+                password
+            );
             await updateProfile(auth.currentUser, {
                 displayName: username,
+            });
+            setAuthUser({
+                uid: user.uid,
+                email: user.email,
+                username,
             });
         } catch (error) {
             console.error("An error occured", error);
@@ -71,38 +81,43 @@ const RegisterForm = () => {
                         </span>
                     </div>
 
-                    <div className="mt-10 pl-1 flex flex-col">
-                        <label>Name</label>
-                        <input
-                            type="text"
-                            className="border-b border-black p-4 outline-0 focus-within:border-blue-400"
-                            onChange={(e) => setUsername(e.target.value)}
-                        />
-                    </div>
-                    <div className="mt-10 pl-1 flex flex-col">
-                        <label>Email</label>
-                        <input
-                            type="email"
-                            name="email"
-                            className="border-b border-black p-4 outline-0 focus-within:border-blue-400"
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </div>
-                    <div className="mt-10 pl-1 flex flex-col">
-                        <label>Password</label>
-                        <input
-                            type="password"
-                            name="password"
-                            className="border-b border-black p-4 outline-0 focus-within:border-blue-400"
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
-                    <button
-                        className="bg-black text-white w-44 py-4 mt-10 rounded-full transition-transform hover:bg-black/[0.8] active:scale-90"
-                        onClick={singupHandler}
-                    >
-                        Sign Up
-                    </button>
+                    <form onSubmit={(e) => e.preventDefault()}>
+                        <div className="mt-10 pl-1 flex flex-col">
+                            <label>Name</label>
+                            <input
+                                type="text"
+                                className="font-medium border-b border-black p-4 outline-0 focus-within:border-blue-400"
+                                onChange={(e) => setUsername(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="mt-10 pl-1 flex flex-col">
+                            <label>Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                className="font-medium border-b border-black p-4 outline-0 focus-within:border-blue-400"
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="mt-10 pl-1 flex flex-col">
+                            <label>Password</label>
+                            <input
+                                type="password"
+                                name="password"
+                                className="font-medium border-b border-black p-4 outline-0 focus-within:border-blue-400"
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <button
+                            className="bg-black text-white w-44 py-4 mt-10 rounded-full transition-transform hover:bg-black/[0.8] active:scale-90"
+                            onClick={singupHandler}
+                        >
+                            Sign Up
+                        </button>
+                    </form>
                 </div>
             </div>
             <div

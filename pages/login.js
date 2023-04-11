@@ -27,13 +27,20 @@ const LoginForm = () => {
     }, [authUser, isLoading]);
 
     const loginHandler = async () => {
-        const user = await signInWithEmailAndPassword(auth, email, password);
-        console.log(user);
+        if (!email || !password) return;
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+        } catch (error) {
+            console.error("An error occured", error);
+        }
     };
 
     const signInWithGoogle = async () => {
-        const user = await signInWithPopup(auth, Provider);
-        console.log(user);
+        try {
+            await signInWithPopup(auth, Provider);
+        } catch (error) {
+            console.error("An error occured", error);
+        }
     };
 
     return isLoading || (!isLoading && !!authUser) ? (
@@ -63,30 +70,32 @@ const LoginForm = () => {
                         </span>
                     </div>
 
-                    <div className="mt-10 pl-1 flex flex-col">
-                        <label>Email</label>
-                        <input
-                            type="email"
-                            name="email"
-                            className="border-b border-black p-4 outline-0 focus-within:border-blue-400"
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </div>
-                    <div className="mt-10 pl-1 flex flex-col">
-                        <label>Password</label>
-                        <input
-                            type="password"
-                            name="password"
-                            className="border-b border-black p-4 outline-0 focus-within:border-blue-400"
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
-                    <button
-                        className="bg-black text-white w-44 py-4 mt-10 rounded-full transition-transform hover:bg-black/[0.8] active:scale-90"
-                        onClick={loginHandler}
-                    >
-                        Sign in
-                    </button>
+                    <form onSubmit={(e) => e.preventDefault()}>
+                        <div className="mt-10 pl-1 flex flex-col">
+                            <label>Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                className="font-medium border-b border-black p-4 outline-0 focus-within:border-blue-400"
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </div>
+                        <div className="mt-10 pl-1 flex flex-col">
+                            <label>Password</label>
+                            <input
+                                type="password"
+                                name="password"
+                                className="font-medium border-b border-black p-4 outline-0 focus-within:border-blue-400"
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                        </div>
+                        <button
+                            className="bg-black text-white w-44 py-4 mt-10 rounded-full transition-transform hover:bg-black/[0.8] active:scale-90"
+                            onClick={loginHandler}
+                        >
+                            Sign in
+                        </button>
+                    </form>
                 </div>
             </div>
             <div

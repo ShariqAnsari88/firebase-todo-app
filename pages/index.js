@@ -1,17 +1,27 @@
+import { useEffect, useState } from "react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { MdDeleteForever } from "react-icons/md";
 import { GoSignOut } from "react-icons/go";
-import { FaEdit } from "react-icons/fa";
 import { useAuth } from "@/firebase/auth";
-import { useEffect } from "react";
 import { useRouter } from "next/router";
 import Loader from "@/components/Loader";
 
-const arr = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-];
+import {
+    collection,
+    addDoc,
+    getDocs,
+    where,
+    query,
+    deleteDoc,
+    updateDoc,
+    doc,
+} from "firebase/firestore";
+import { db } from "../firebase/firebase";
 
 export default function Home() {
+    const [todoInput, setTodoInput] = useState("");
+    const [todos, setTodos] = useState([]);
+
     const { signOut, authUser, isLoading } = useAuth();
     const router = useRouter();
 
@@ -19,7 +29,76 @@ export default function Home() {
         if (!isLoading && !authUser) {
             router.push("/login");
         }
+        if (!!authUser) {
+            fetchTodos(authUser.uid);
+        }
     }, [authUser, isLoading]);
+
+    /**
+     * Fetches all the todos for a given user ID from Firestore and sets the todos state with the data.
+     *
+     * @param {string} uid - The user ID to fetch todos for.
+     * @return {void}
+     */
+    const fetchTodos = async (uid) => {
+        try {
+            // Create a Firestore query to fetch all the todos for the user with the given ID.
+            const q = query(collection(db, "todos"), where("owner", "==", uid));
+
+            // Execute the query and get a snapshot of the results.
+            const querySnapshot = await getDocs(q);
+
+            // Extract the data from each todo document and add it to the data array.
+            let data = [];
+            querySnapshot.forEach((todo) => {
+                console.log(todo);
+                data.push({ ...todo.data(), id: todo.id });
+            });
+
+            // Set the todos state with the data array.
+            setTodos(data);
+        } catch (error) {
+            // Handle any errors that occur during the fetch operation.
+            console.error("An error occured", error);
+        }
+    };
+
+    const addToDo = async () => {
+        try {
+            const docRef = await addDoc(collection(db, "todos"), {
+                owner: authUser.uid,
+                content: todoInput,
+                completed: false,
+            });
+            fetchTodos(authUser.uid);
+            setTodoInput("");
+            console.log(docRef.id);
+        } catch (error) {
+            console.error("An error occured", error);
+        }
+    };
+
+    const deleteTodo = async (docId) => {
+        try {
+            await deleteDoc(doc(db, "todos", docId));
+            fetchTodos(authUser.uid);
+            console.log("deleted Doc");
+        } catch (error) {
+            console.error("An error occured", error);
+        }
+    };
+
+    const makeAsCompleteHander = async (event, docId) => {
+        try {
+            const todoRef = doc(db, "todos", docId);
+            await updateDoc(todoRef, {
+                completed: event.target.checked,
+            });
+            fetchTodos(authUser.uid);
+        } catch (error) {
+            console.error("An error occured", error);
+        }
+    };
 
     return !authUser ? (
         <Loader />
@@ -42,45 +121,61 @@ export default function Home() {
                     </div>
                     <div className="flex items-center gap-2 mt-10">
                         <input
-                            placeholder="What to do Today?"
+                            placeholder={`👋 Hello ${authUser.username}, What to do Today?`}
                             type="text"
-                            className="font-medium border-[2px] border-black h-[60px] grow shadow-sm rounded-md px-4 focus-visible:outline-yellow-400 placeholder:text-black text-lg transition-all duration-300"
+                            className="font-semibold placeholder:text-gray-500 border-[2px] border-black h-[60px] grow shadow-sm rounded-md px-4 focus-visible:outline-yellow-400 text-lg transition-all duration-300"
                             autoFocus
+                            value={todoInput}
+                            onChange={(e) => setTodoInput(e.target.value)}
                         />
-                        <button className="w-[60px] h-[60px] rounded-md bg-black flex justify-center items-center cursor-pointer transition-all duration-300 hover:bg-black/[0.8]">
+                        <button
+                            className="w-[60px] h-[60px] rounded-md bg-black flex justify-center items-center cursor-pointer transition-all duration-300 hover:bg-black/[0.8]"
+                            onClick={addToDo}
+                        >
                             <AiOutlinePlus size={30} color="#fff" />
                         </button>
                     </div>
                 </div>
                 <div className="my-10">
-                    {arr.map((todo, index) => (
-                        <div className="flex items-center justify-between mt-4">
-                            <div className="flex items-center gap-3">
-                                <input
-                                    id={`todo-${index}`}
-                                    type="checkbox"
-                                    className="w-4 h-4 accent-green-400 rounded-lg"
-                                />
-                                <label
-                                    htmlFor={`todo-${index}`}
-                                    className="font-medium"
-                                >
-                                    This is my first todo
-                                </label>
-                            </div>
+                    {todos.length > 0 &&
+                        todos.map((todo) => (
+                            <div
+                                key={todo.id}
+                                className="flex items-center justify-between mt-4"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <input
+                                        id={`todo-${todo.id}`}
+                                        type="checkbox"
+                                        className="w-4 h-4 accent-green-400 rounded-lg"
+                                        checked={todo.completed}
+                                        onChange={(e) =>
+                                            makeAsCompleteHander(e, todo.id)
+                                        }
+                                    />
+                                    <label
+                                        htmlFor={`todo-${todo.id}`}
+                                        className={`font-medium ${
+                                            todo.completed ? "line-through" : ""
+                                        }`}
+                                    >
+                                        {todo.content}
+                                    </label>
+                                </div>
 
-                            <div className="flex items-center gap-3">
-                                <FaEdit
-                                    size={18}
-                                    className="text-green-400 cursor-pointer"
-                                />
-                                <MdDeleteForever
-                                    size={22}
-                                    className="text-red-400 cursor-pointer"
-                                />
+                                <div className="flex items-center gap-3">
+                                    <MdDeleteForever
+                                        size={24}
+                                        className="text-red-400 hover:text-red-600 cursor-pointer"
+                                        onClick={() => deleteTodo(todo.id)}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+
+                    {todos.length < 1 && (
+                        <span className="text-center w-full block text-2xl font-medium text-gray-400 mt-28">{`🥹 You don't have todo's`}</span>
+                    )}
                 </div>
             </div>
         </main>
