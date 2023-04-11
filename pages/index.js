@@ -5,7 +5,6 @@ import { GoSignOut } from "react-icons/go";
 import { useAuth } from "@/firebase/auth";
 import { useRouter } from "next/router";
 import Loader from "@/components/Loader";
-
 import {
     collection,
     addDoc,
@@ -58,21 +57,25 @@ export default function Home() {
             // Set the todos state with the data array.
             setTodos(data);
         } catch (error) {
-            // Handle any errors that occur during the fetch operation.
             console.error("An error occured", error);
         }
     };
 
     const addToDo = async () => {
         try {
+            // Add a new todo document to the "todos" collection in Firestore with the current user's ID,
+            // the content of the todo input, and a completed status of false.
             const docRef = await addDoc(collection(db, "todos"), {
                 owner: authUser.uid,
                 content: todoInput,
                 completed: false,
             });
+
+            // After adding the new todo, fetch all todos for the current user and update the state with the new data.
             fetchTodos(authUser.uid);
+
+            // Clear the todo input field.
             setTodoInput("");
-            console.log(docRef.id);
         } catch (error) {
             console.error("An error occured", error);
         }
@@ -80,9 +83,11 @@ export default function Home() {
 
     const deleteTodo = async (docId) => {
         try {
+            // Delete the todo document with the given ID from the "todos" collection in Firestore.
             await deleteDoc(doc(db, "todos", docId));
+
+            // After deleting the todo, fetch all todos for the current user and update the state with the new data.
             fetchTodos(authUser.uid);
-            console.log("deleted Doc");
         } catch (error) {
             console.error("An error occured", error);
         }
@@ -90,10 +95,15 @@ export default function Home() {
 
     const makeAsCompleteHander = async (event, docId) => {
         try {
+            // Get a reference to the todo document with the given ID in the "todos" collection in Firestore.
             const todoRef = doc(db, "todos", docId);
+
+            // Update the "completed" field of the todo document to the value of the "checked" property of the event target.
             await updateDoc(todoRef, {
                 completed: event.target.checked,
             });
+
+            // After updating the todo, fetch all todos for the current user and update the state with the new data.
             fetchTodos(authUser.uid);
         } catch (error) {
             console.error("An error occured", error);
