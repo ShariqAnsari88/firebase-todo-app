@@ -9,6 +9,8 @@ import {
 } from "firebase/auth";
 import { useRouter } from "next/router";
 import { useAuth } from "@/firebase/auth";
+import Link from "next/link";
+import Loader from "@/components/Loader";
 
 const Provider = new GoogleAuthProvider();
 
@@ -35,7 +37,7 @@ const LoginForm = () => {
     };
 
     return isLoading || (!isLoading && !!authUser) ? (
-        "Loading"
+        <Loader />
     ) : (
         <main className="flex lg:h-[100vh]">
             <div className="w-full lg:w-[60%] p-8 md:p-14 flex items-center justify-center lg:justify-start">
@@ -43,9 +45,12 @@ const LoginForm = () => {
                     <h1 className="text-6xl font-semibold">Login</h1>
                     <p className="mt-6 ml-1">
                         Don't have an account ?{" "}
-                        <span className="underline hover:text-blue-400 cursor-pointer">
+                        <Link
+                            href="/register"
+                            className="underline hover:text-blue-400 cursor-pointer"
+                        >
                             Sign Up
-                        </span>
+                        </Link>
                     </p>
 
                     <div className="bg-black/[0.05] text-white w-full py-4 mt-10 rounded-full transition-transform hover:bg-black/[0.8] active:scale-90 flex justify-center items-center gap-4 cursor-pointer group">

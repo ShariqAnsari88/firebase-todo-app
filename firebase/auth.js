@@ -25,6 +25,7 @@ export default function useFirebaseAuth() {
         setAuthUser({
             uid: user.uid,
             email: user.email,
+            username: user.displayName,
         });
         setIsLoading(false);
     };
