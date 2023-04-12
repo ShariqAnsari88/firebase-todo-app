@@ -61,6 +61,12 @@ export default function Home() {
         }
     };
 
+    const onKeyUp = (event) => {
+        if (event?.key === "Enter" && todoInput?.length > 0) {
+            addToDo();
+        }
+    };
+
     const addToDo = async () => {
         try {
             // Add a new todo document to the "todos" collection in Firestore with the current user's ID,
@@ -137,6 +143,7 @@ export default function Home() {
                             autoFocus
                             value={todoInput}
                             onChange={(e) => setTodoInput(e.target.value)}
+                            onKeyUp={(e) => onKeyUp(e)}
                         />
                         <button
                             className="w-[60px] h-[60px] rounded-md bg-black flex justify-center items-center cursor-pointer transition-all duration-300 hover:bg-black/[0.8]"
