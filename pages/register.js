@@ -24,21 +24,21 @@ const RegisterForm = () => {
                         <label>Name</label>
                         <input
                             type="text"
-                            className="border-b border-black p-4 pt-0 outline-0 focus-within:border-blue-400"
+                            className="font-medium border-b border-black p-4 outline-0 focus-within:border-blue-400"
                         />
                     </div>
                     <div className="mt-10 pl-1 flex flex-col">
                         <label>Email</label>
                         <input
                             type="text"
-                            className="border-b border-black p-4 pt-0 outline-0 focus-within:border-blue-400"
+                            className="font-medium border-b border-black p-4 outline-0 focus-within:border-blue-400"
                         />
                     </div>
                     <div className="mt-10 pl-1 flex flex-col">
                         <label>Password</label>
                         <input
                             type="password"
-                            className="border-b border-black p-4 pt-0 outline-0 focus-within:border-blue-400"
+                            className="font-medium border-b border-black p-4 outline-0 focus-within:border-blue-400"
                         />
                     </div>
                     <button className="bg-black text-white w-44 py-4 mt-10 rounded-full transition-transform hover:bg-black/[0.8] active:scale-90">

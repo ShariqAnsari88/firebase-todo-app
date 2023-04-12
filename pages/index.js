@@ -1,7 +1,6 @@
 import { AiOutlinePlus } from "react-icons/ai";
 import { MdDeleteForever } from "react-icons/md";
 import { GoSignOut } from "react-icons/go";
-import { FaEdit } from "react-icons/fa";
 const arr = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 ];
@@ -23,9 +22,9 @@ export default function Home() {
                     </div>
                     <div className="flex items-center gap-2 mt-10">
                         <input
-                            placeholder="What to do Today?"
+                            placeholder={`👋 Hello name, What to do Today?`}
                             type="text"
-                            className="font-medium border-[2px] border-black h-[60px] grow shadow-sm rounded-md px-4 focus-visible:outline-yellow-400 placeholder:text-black text-lg transition-all duration-300"
+                            className="font-semibold placeholder:text-gray-500 border-[2px] border-black h-[60px] grow shadow-sm rounded-md px-4 focus-visible:outline-yellow-400 text-lg transition-all duration-300"
                             autoFocus
                         />
                         <button className="w-[60px] h-[60px] rounded-md bg-black flex justify-center items-center cursor-pointer transition-all duration-300 hover:bg-black/[0.8]">
@@ -51,13 +50,9 @@ export default function Home() {
                             </div>
 
                             <div className="flex items-center gap-3">
-                                <FaEdit
-                                    size={18}
-                                    className="text-green-400 cursor-pointer"
-                                />
                                 <MdDeleteForever
-                                    size={22}
-                                    className="text-red-400 cursor-pointer"
+                                    size={24}
+                                    className="text-red-400 hover:text-red-600 cursor-pointer"
                                 />
                             </div>
                         </div>
